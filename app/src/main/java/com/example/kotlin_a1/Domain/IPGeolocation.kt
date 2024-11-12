@@ -26,8 +26,9 @@ class IPGeolocation {
         return runBlocking {
             val url = "$baseUrl$ip?lang=pt-BR"
             try {
-                client.get(url).body<LocalizacaoIP>()
+                val retorno = client.get(url).body<LocalizacaoIP>()
 
+                retorno
             } catch (e: Exception) {
                 println("Erro na requisição: ${e.message}")
                 null
@@ -36,4 +37,5 @@ class IPGeolocation {
             }
         }
     }
+
 }
