@@ -5,21 +5,26 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.lifecycleScope
-import com.example.kotlin_a1.Domain.IPGeolocation
+import com.example.kotlin_a1.Domain.GeolocalizacaoAPI
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -36,85 +41,128 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun TelaGeolocalizacaoIP() {
         var enderecoIP by remember { mutableStateOf(TextFieldValue("")) }
-        var textoResultado by remember { mutableStateOf("Informações do IP serão exibidas aqui") }
+        var textoResultado by remember { mutableStateOf(AnnotatedString("Informações do IP serão exibidas aqui")) }
+        val keyboardController = LocalSoftwareKeyboardController.current // Controlador do teclado
 
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+                .background(MaterialTheme.colorScheme.background)
+                .padding(16.dp)
         ) {
-            Text(
-                text = "Digite o endereço IP:",
-                fontSize = 20.sp,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-
-            BasicTextField(
-                value = enderecoIP,
-                onValueChange = { novoValor ->
-                    enderecoIP = formatarEntradaIP(novoValor)
-                },
+            Column(
                 modifier = Modifier
-                    .padding(8.dp)
-                    .fillMaxWidth()
-                    .background(Color.LightGray, shape = MaterialTheme.shapes.small)
+                    .fillMaxSize()
                     .padding(16.dp),
-                textStyle = TextStyle(fontSize = 18.sp, color = Color.Black),
-                singleLine = true
-            )
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "Consulta de Geolocalização por IP",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
 
-            Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "Digite um endereço IP para consultar informações geográficas.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
 
-            Button(onClick = {
-                if (enderecoIP.text.isNotBlank()) {
-                    buscarGeolocalizacaoIP(enderecoIP.text) { resultado ->
-                        textoResultado = resultado
-                    }
+                OutlinedTextField(
+                    value = enderecoIP.text,
+                    onValueChange = { novoValor -> enderecoIP = formatarEntradaIP(TextFieldValue(novoValor)) },
+                    label = { Text("Endereço IP") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    textStyle = TextStyle(fontSize = 18.sp, color = MaterialTheme.colorScheme.onSurface),
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(onDone = {
+                        if (enderecoIP.text.isNotBlank()) {
+                            keyboardController?.hide() // Fecha o teclado
+                            buscarGeolocalizacaoIP(enderecoIP.text) { resultado ->
+                                textoResultado = resultado
+                            }
+                        }
+                    })
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(
+                    onClick = {
+                        if (enderecoIP.text.isNotBlank()) {
+                            keyboardController?.hide() // Fecha o teclado
+                            buscarGeolocalizacaoIP(enderecoIP.text) { resultado ->
+                                textoResultado = resultado
+                            }
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Text(text = "Buscar Geolocalização", style = MaterialTheme.typography.labelLarge)
                 }
-            }, modifier = Modifier.fillMaxWidth()) {
-                Text(text = "Buscar Geolocalização")
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(8.dp))
+                        .padding(16.dp)
+                ) {
+                    Text(
+                        text = textoResultado,
+                        style = TextStyle(fontSize = 18.sp, color = MaterialTheme.colorScheme.onSurface)
+                    )
+                }
             }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text(
-                text = textoResultado,
-                fontSize = 16.sp,
-                modifier = Modifier.padding(top = 16.dp)
-            )
         }
     }
 
-    private fun buscarGeolocalizacaoIP(ip: String, onResult: (String) -> Unit) {
-        val servicoGeolocalizacao = IPGeolocation()
+
+    private fun buscarGeolocalizacaoIP(ip: String, onResult: (AnnotatedString) -> Unit) {
+        val servicoGeolocalizacao = GeolocalizacaoAPI()
 
         lifecycleScope.launch {
             try {
-                val resultado = servicoGeolocalizacao.getIpInfo(ip)
+                val resultado = servicoGeolocalizacao.obterInformacoesIP(ip)
                 if (resultado != null) {
-                    val informacoes = """
-                        IP: ${resultado.query}
-                        Status: ${resultado.status}
-                        País: ${resultado.country}
-                        Região: ${resultado.regionName}
-                        Cidade: ${resultado.city}
-                        CEP: ${resultado.zip}
-                        Latitude: ${resultado.lat}
-                        Longitude: ${resultado.lon}
-                        Fuso Horário: ${resultado.timezone}
-                        Provedor: ${resultado.isp}
-                        Organização: ${resultado.org}
-                    """.trimIndent()
+                    val informacoes = AnnotatedString.Builder().apply {
+                        appendNegrito("IP: "); append("${resultado.ip}\n")
+                        appendNegrito("Nome do Host: "); append("${resultado.hostname ?: "Desconhecido"}\n")
+                        appendNegrito("Código do Continente: "); append("${resultado.continent_code ?: "Desconhecido"}\n")
+                        appendNegrito("Nome do Continente: "); append("${resultado.continent_name ?: "Desconhecido"}\n")
+                        appendNegrito("Código do País: "); append("${resultado.country_code2 ?: "Desconhecido"}\n")
+                        appendNegrito("Estado: "); append("${resultado.state_prov ?: "Desconhecido"}\n")
+                        appendNegrito("Cidade: "); append("${resultado.city ?: "Desconhecida"}\n")
+                        appendNegrito("Latitude: "); append("${resultado.latitude ?: "Desconhecida"}\n")
+                        appendNegrito("Longitude: "); append("${resultado.longitude ?: "Desconhecida"}\n")
+                        appendNegrito("Fuso Horário: "); append("${resultado.fusoHorario ?: "Desconhecido"}\n")
+                        appendNegrito("Provedor (ISP): "); append("${resultado.isp ?: "Desconhecido"}\n")
+                        appendNegrito("Organização: "); append("${resultado.organization ?: "Desconhecida"}\n")
+                      }.toAnnotatedString()
                     onResult(informacoes)
                 } else {
-                    onResult("Erro ao buscar informações de geolocalização.")
+                    onResult(AnnotatedString("Erro ao buscar informações de geolocalização."))
                 }
             } catch (e: Exception) {
-                onResult("Erro: ${e.message}")
+                onResult(AnnotatedString("Erro: ${e.message}"))
             }
         }
+    }
+
+    private fun AnnotatedString.Builder.appendNegrito(texto: String) {
+        pushStyle(SpanStyle(fontWeight = FontWeight.Bold))
+        append(texto)
+        pop()
     }
 
     private fun formatarEntradaIP(entrada: TextFieldValue): TextFieldValue {
@@ -125,7 +173,7 @@ class MainActivity : ComponentActivity() {
 
         return TextFieldValue(
             text = textoFormatado,
-            selection = TextRange(novaPosicaoCursor)
+            selection = androidx.compose.ui.text.TextRange(novaPosicaoCursor)
         )
     }
 }
