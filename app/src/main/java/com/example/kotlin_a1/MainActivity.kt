@@ -1,5 +1,6 @@
 package com.example.kotlin_a1
 
+import GeolocalizacaoIP
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -42,7 +43,9 @@ class MainActivity : ComponentActivity() {
     fun TelaGeolocalizacaoIP() {
         var enderecoIP by remember { mutableStateOf(TextFieldValue("")) }
         var textoResultado by remember { mutableStateOf(AnnotatedString("Informações do IP serão exibidas aqui")) }
-        val keyboardController = LocalSoftwareKeyboardController.current // Controlador do teclado
+        var resultadoApi by remember { mutableStateOf<GeolocalizacaoIP?>(null) }
+        val keyboardController = LocalSoftwareKeyboardController.current
+        var showModal by remember { mutableStateOf(false) }
 
         Box(
             modifier = Modifier
@@ -84,8 +87,9 @@ class MainActivity : ComponentActivity() {
                     keyboardActions = KeyboardActions(onDone = {
                         if (enderecoIP.text.isNotBlank()) {
                             keyboardController?.hide() // Fecha o teclado
-                            buscarGeolocalizacaoIP(enderecoIP.text) { resultado ->
-                                textoResultado = resultado
+                            buscarGeolocalizacaoIP(enderecoIP.text) { resultado, info ->
+                                resultadoApi = resultado
+                                textoResultado = info
                             }
                         }
                     })
@@ -97,8 +101,9 @@ class MainActivity : ComponentActivity() {
                     onClick = {
                         if (enderecoIP.text.isNotBlank()) {
                             keyboardController?.hide() // Fecha o teclado
-                            buscarGeolocalizacaoIP(enderecoIP.text) { resultado ->
-                                textoResultado = resultado
+                            buscarGeolocalizacaoIP(enderecoIP.text) { resultado, info ->
+                                resultadoApi = resultado
+                                textoResultado = info
                             }
                         }
                     },
@@ -123,12 +128,33 @@ class MainActivity : ComponentActivity() {
                         style = TextStyle(fontSize = 18.sp, color = MaterialTheme.colorScheme.onSurface)
                     )
                 }
+
+                // Botão para abrir o modal
+                if (resultadoApi != null) {
+                    FloatingActionButton(
+                        onClick = { showModal = true },
+                        modifier = Modifier
+                            .padding(16.dp)
+                    ) {
+                        Text("Gravar")
+                    }
+                }
+            }
+
+            // Modal para Nome e Descrição
+            if (showModal && resultadoApi != null) {
+                ModalSaveData(
+                    resultado = resultadoApi!!, // Passando o objeto resultado da API
+                    onClose = { showModal = false } // Fecha o modal
+                )
             }
         }
     }
 
-
-    private fun buscarGeolocalizacaoIP(ip: String, onResult: (AnnotatedString) -> Unit) {
+    private fun buscarGeolocalizacaoIP(
+        ip: String,
+        onResult: (GeolocalizacaoIP?, AnnotatedString) -> Unit
+    ) {
         val servicoGeolocalizacao = GeolocalizacaoAPI()
 
         lifecycleScope.launch {
@@ -148,13 +174,13 @@ class MainActivity : ComponentActivity() {
                         appendNegrito("Fuso Horário: "); append("${resultado.fusoHorario ?: "Desconhecido"}\n")
                         appendNegrito("Provedor (ISP): "); append("${resultado.isp ?: "Desconhecido"}\n")
                         appendNegrito("Organização: "); append("${resultado.organization ?: "Desconhecida"}\n")
-                      }.toAnnotatedString()
-                    onResult(informacoes)
+                    }.toAnnotatedString()
+                    onResult(resultado, informacoes)
                 } else {
-                    onResult(AnnotatedString("Erro ao buscar informações de geolocalização."))
+                    onResult(null, AnnotatedString("Erro ao buscar informações de geolocalização."))
                 }
             } catch (e: Exception) {
-                onResult(AnnotatedString("Erro: ${e.message}"))
+                onResult(null, AnnotatedString("Erro: ${e.message}"))
             }
         }
     }
@@ -177,3 +203,4 @@ class MainActivity : ComponentActivity() {
         )
     }
 }
+

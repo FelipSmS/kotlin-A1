@@ -1,7 +1,9 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
-    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.10" // Adicionado plugin de serialização
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.10"
+    id("com.google.gms.google-services") // Plugin do Firebase
+    id("com.google.firebase.crashlytics")
 }
 
 android {
@@ -41,11 +43,11 @@ android {
     }
 
     buildFeatures {
-        compose = true
+        compose = true // Ativa o Jetpack Compose
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.5.1" // Verifique a versão correta para o Compose
     }
 
     packaging {
@@ -56,22 +58,25 @@ android {
 }
 
 dependencies {
+    implementation(platform(libs.firebase.bom)) // Firebase BOM para gerenciamento de versões
+    implementation(libs.firebase.analytics) // Firebase Analytics
+    implementation(libs.firebase.crashlytics) // Firebase Crashlytics
+    implementation(libs.firebase.database.ktx)
+
+
     // AndroidX
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
 
-    // Compose
+    // Jetpack Compose
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
 
-    // Firebase Crashlytics
-    implementation(libs.firebase.crashlytics.buildtools)
-
-    // Ktor Client
+    // Ktor Client para chamadas HTTP
     implementation("io.ktor:ktor-client-core:2.3.4")
     implementation("io.ktor:ktor-client-cio:2.3.4")
     implementation("io.ktor:ktor-client-content-negotiation:2.3.4")
