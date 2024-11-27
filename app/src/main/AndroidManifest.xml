@@ -15,6 +15,11 @@
         android:theme="@style/Theme.KotlinA1">
 
         <activity
+            android:name=".ListarDadosActivity"
+            android:exported="true"
+            android:label="Listar Dados" />
+
+        <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"

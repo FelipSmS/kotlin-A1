@@ -84,6 +84,8 @@ dependencies {
 
     // Kotlinx Serialization
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+    implementation(libs.firebase.common.ktx)
+    implementation(libs.firebase.firestore.ktx)
 
     // Testes
     testImplementation(libs.junit)

@@ -1,20 +1,19 @@
 package com.example.kotlin_a1
 
 import GeolocalizacaoIP
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
@@ -26,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.lifecycleScope
 import com.example.kotlin_a1.Domain.GeolocalizacaoAPI
+import com.example.kotlin_a1.Modals.ModalSaveData
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -47,6 +47,16 @@ class MainActivity : ComponentActivity() {
         val keyboardController = LocalSoftwareKeyboardController.current
         var showModal by remember { mutableStateOf(false) }
 
+        Button(
+            onClick = {
+                val intent = Intent(this@MainActivity, ListarDadosActivity::class.java)
+                startActivity(intent)
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Listar Dados Salvos")
+        }
+
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -67,12 +77,18 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
 
-                Text(
-                    text = "Digite um endereço IP para consultar informações geográficas.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
+                Button(
+                    onClick = {
+                        val intent = Intent(this@MainActivity, ListarDadosActivity::class.java)
+                        startActivity(intent)
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 10.dp)
+                        .width(10.dp)
+                ) {
+                    Text("Listar Dados Salvos")
+                }
 
                 OutlinedTextField(
                     value = enderecoIP.text,
@@ -129,7 +145,7 @@ class MainActivity : ComponentActivity() {
                     )
                 }
 
-                // Botão para abrir o modal
+
                 if (resultadoApi != null) {
                     FloatingActionButton(
                         onClick = { showModal = true },
