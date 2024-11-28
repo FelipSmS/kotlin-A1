@@ -93,7 +93,6 @@ fun ListarDadosScreen() {
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
 
-                            // Clique na coluna para mostrar os detalhes
                             Column(
                                 modifier = Modifier
                                     .weight(1f)
@@ -107,7 +106,6 @@ fun ListarDadosScreen() {
                                 Text(item.descricao, style = MaterialTheme.typography.bodyMedium)
                             }
 
-                            // Ícones de Editar e Excluir
                             Row {
                                 IconButton(onClick = {
                                     registroSelecionado = item
@@ -129,7 +127,6 @@ fun ListarDadosScreen() {
         }
     }
 
-    // Modal para exibir os detalhes
     if (showModalDetalhes && registroSelecionado != null) {
         ModalMostrarInfoIp(
             geolocalizacaoSalva = registroSelecionado!!,
@@ -143,7 +140,6 @@ fun ListarDadosScreen() {
             onClose = { showModalEditar = false },
             onSave = { id, nome, descricao ->
                 FirebaseService.atualizarGeolocalizacao(id, nome, descricao)
-                // Atualizar lista localmente
                 dadosSalvos = dadosSalvos.map {
                     if (it.id == id) it.copy(nome = nome, descricao = descricao) else it
                 }

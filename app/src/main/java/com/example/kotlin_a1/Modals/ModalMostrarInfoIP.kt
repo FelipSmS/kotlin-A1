@@ -19,36 +19,34 @@ fun ModalMostrarInfoIp(
     onClose: () -> Unit
 )
  {
-    AlertDialog(
-        onDismissRequest = onClose,
-        confirmButton = {
-            Button(onClick = onClose) {
-                Frame.Text("Fechar")
-            }
-        },
-        text = {
-            Column {
-                Text("Detalhes da Geolocalização", style = MaterialTheme.typography.titleLarge)
-                Spacer(modifier = Modifier.height(16.dp))
+     AlertDialog(
+         onDismissRequest = onClose,
+         confirmButton = {
+             Button(onClick = onClose) {
+                 Text("Fechar")
+             }
+         },
+         text = {
+             Column {
+                 Text("Detalhes da Geolocalização", style = MaterialTheme.typography.titleLarge)
+                 Spacer(modifier = Modifier.height(16.dp))
 
-                Text("Nome: ${geolocalizacaoSalva.nome}", style = MaterialTheme.typography.bodyMedium)
-                Text("Descrição: ${geolocalizacaoSalva.descricao}", style = MaterialTheme.typography.bodyMedium)
-                Text("IP: ${geolocalizacaoSalva.resultado?.ip}", style = MaterialTheme.typography.bodyMedium)
-                Text("Hostname: ${geolocalizacaoSalva.resultado?.hostname}", style = MaterialTheme.typography.bodyMedium)
-                Text("Código do Continente: ${geolocalizacaoSalva.resultado?.continent_code}", style = MaterialTheme.typography.bodyMedium)
-                Text("Nome do Continente: ${geolocalizacaoSalva.resultado?.continent_name}", style = MaterialTheme.typography.bodyMedium)
-                Text("Código do País: ${geolocalizacaoSalva.resultado?.country_code2}", style = MaterialTheme.typography.bodyMedium)
-                Text("Estado/Província: ${geolocalizacaoSalva.resultado?.state_prov}", style = MaterialTheme.typography.bodyMedium)
-                Text("Cidade: ${geolocalizacaoSalva.resultado?.city}", style = MaterialTheme.typography.bodyMedium)
-                Text("Latitude: ${geolocalizacaoSalva.resultado?.latitude}", style = MaterialTheme.typography.bodyMedium)
-                Text("Longitude: ${geolocalizacaoSalva.resultado?.longitude}", style = MaterialTheme.typography.bodyMedium)
-                Text("Fuso Horário: ${geolocalizacaoSalva.resultado?.fusoHorario}", style = MaterialTheme.typography.bodyMedium)
-                Text("ISP: ${geolocalizacaoSalva.resultado?.isp}", style = MaterialTheme.typography.bodyMedium)
-                Text("Bandeira do País: ${geolocalizacaoSalva.resultado?.country_flag}", style = MaterialTheme.typography.bodyMedium)
-                Text("Emoji do País: ${geolocalizacaoSalva.resultado?.country_emoji}", style = MaterialTheme.typography.bodyMedium)
-                Text("Organização: ${geolocalizacaoSalva.resultado?.organization}", style = MaterialTheme.typography.bodyMedium)
+                 Text("Nome: ${geolocalizacaoSalva.nome}", style = MaterialTheme.typography.bodyMedium)
+                 Text("Descrição: ${geolocalizacaoSalva.descricao}", style = MaterialTheme.typography.bodyMedium)
+                 Text("IP: ${geolocalizacaoSalva.resultado?.ip}", style = MaterialTheme.typography.bodyMedium)
+                 Text("Hostname: ${geolocalizacaoSalva.resultado?.hostname}", style = MaterialTheme.typography.bodyMedium)
+                 Text("Código do Continente: ${geolocalizacaoSalva.resultado?.continent_code}", style = MaterialTheme.typography.bodyMedium)
+                 Text("Nome do Continente: ${geolocalizacaoSalva.resultado?.continent_name}", style = MaterialTheme.typography.bodyMedium)
+                 Text("Código do País: ${geolocalizacaoSalva.resultado?.country_code2}", style = MaterialTheme.typography.bodyMedium)
+                 Text("Estado/Província: ${geolocalizacaoSalva.resultado?.state_prov}", style = MaterialTheme.typography.bodyMedium)
+                 Text("Cidade: ${geolocalizacaoSalva.resultado?.city}", style = MaterialTheme.typography.bodyMedium)
+                 Text("Latitude: ${geolocalizacaoSalva.resultado?.latitude}", style = MaterialTheme.typography.bodyMedium)
+                 Text("Longitude: ${geolocalizacaoSalva.resultado?.longitude}", style = MaterialTheme.typography.bodyMedium)
+                 Text("ISP: ${geolocalizacaoSalva.resultado?.isp}", style = MaterialTheme.typography.bodyMedium)
+                 Text("Emoji do País: ${geolocalizacaoSalva.resultado?.country_emoji}", style = MaterialTheme.typography.bodyMedium)
+                 Text("Organização: ${geolocalizacaoSalva.resultado?.organization}", style = MaterialTheme.typography.bodyMedium)
+             }
+         }
+     )
 
-            }
-        }
-    )
 }

@@ -42,7 +42,7 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun TelaGeolocalizacaoIP() {
         var enderecoIP by remember { mutableStateOf(TextFieldValue("")) }
-        var textoResultado by remember { mutableStateOf(AnnotatedString("Informações do IP serão exibidas aqui")) }
+        var textoResultado by remember { mutableStateOf(AnnotatedString("")) }
         var resultadoApi by remember { mutableStateOf<GeolocalizacaoIP?>(null) }
         val keyboardController = LocalSoftwareKeyboardController.current
         var showModal by remember { mutableStateOf(false) }
@@ -147,17 +147,37 @@ class MainActivity : ComponentActivity() {
 
 
                 if (resultadoApi != null) {
-                    FloatingActionButton(
-                        onClick = { showModal = true },
+                    Row(
                         modifier = Modifier
-                            .padding(3.dp)
+                            .fillMaxWidth()
+                            .padding(3.dp),
+                        horizontalArrangement = Arrangement.SpaceEvenly // Espaçamento uniforme entre os botões
                     ) {
-                        Text("Gravar")
+                        // Botão "Gravar"
+                        FloatingActionButton(
+                            onClick = { showModal = true },
+                            modifier = Modifier
+                                .padding(3.dp)
+                        ) {
+                            Text("Gravar")
+                        }
+
+                        FloatingActionButton(
+                            onClick = {
+                                enderecoIP = TextFieldValue("")
+                                textoResultado = AnnotatedString("")
+                                resultadoApi = null
+                            },
+                            modifier = Modifier
+                                .padding(3.dp)
+                        ) {
+                            Text("Limpar")
+                        }
                     }
                 }
+
             }
 
-            // Modal para Nome e Descrição
             if (showModal && resultadoApi != null) {
                 ModalSaveData(
                     resultado = resultadoApi!!, // Passando o objeto resultado da API
