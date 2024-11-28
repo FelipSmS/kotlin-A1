@@ -150,7 +150,7 @@ class MainActivity : ComponentActivity() {
                     FloatingActionButton(
                         onClick = { showModal = true },
                         modifier = Modifier
-                            .padding(16.dp)
+                            .padding(3.dp)
                     ) {
                         Text("Gravar")
                     }
@@ -187,7 +187,6 @@ class MainActivity : ComponentActivity() {
                         appendNegrito("Cidade: "); append("${resultado.city ?: "Desconhecida"}\n")
                         appendNegrito("Latitude: "); append("${resultado.latitude ?: "Desconhecida"}\n")
                         appendNegrito("Longitude: "); append("${resultado.longitude ?: "Desconhecida"}\n")
-                        appendNegrito("Fuso Horário: "); append("${resultado.fusoHorario ?: "Desconhecido"}\n")
                         appendNegrito("Provedor (ISP): "); append("${resultado.isp ?: "Desconhecido"}\n")
                         appendNegrito("Organização: "); append("${resultado.organization ?: "Desconhecida"}\n")
                     }.toAnnotatedString()
